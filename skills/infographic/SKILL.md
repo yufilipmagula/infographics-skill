@@ -40,7 +40,7 @@ Default theme is **light**. Use dark only for the Ops Blueprint archetype or on 
 
 Every page supports two modes, switched in the header (the "Deck" CSS/JS blocks in the template — never edit them):
 - **Article** — the normal scrolling page.
-- **Slides** — one slide at a time, a left panel with numbered thumbnails of all slides, a bottom bar with progress, clickable slide titles (truncated; when they don't all fit, the bar shows those around the current slide and a `^` button opens a list of all slides) and prev/next, `←`/`→` (also PageUp/PageDown, Home/End) and swipe. `#slide-3` in the URL opens slide 3. Print in slides mode puts one slide per page.
+- **Slides** — one slide at a time, a left panel with numbered thumbnails of all slides, a bottom bar with progress, clickable slide titles (truncated; when they don't all fit, the bar shows those around the current slide and a `^` button opens a list of all slides), zoom controls for the slide content only (zoom out / reset / zoom in / fit to width; keys `-`, `0`, `+`, `W`; charts stay sharp and keep working tooltips) and prev/next, `←`/`→` (also PageUp/PageDown, Home/End) and swipe. `#slide-3` in the URL opens slide 3. Print in slides mode puts one slide per page.
 
 Start mode is `<body data-mode="article">`; set `data-mode="slides"` when the user asks for a presentation, deck or slides.
 
@@ -75,7 +75,7 @@ Start mode is `<body data-mode="article">`; set `data-mode="slides"` when the us
 
 ## Verification checklist
 
-- [ ] Head matches template (pinned CDNs, Inter + JetBrains Mono, tailwind.config fonts)
+- [ ] Head matches template (brand-mark favicon `<link rel="icon">` copied unchanged, pinned CDNs, Inter + JetBrains Mono, tailwind.config fonts)
 - [ ] Header: Yunex brand-mark tile copied unchanged from the template, eyebrow badge, mono meta, h1; footer present
 - [ ] Every number traceable to the user's input; estimates labeled
 - [ ] Only `slate` neutrals; accent meanings respected; same entity = same color everywhere

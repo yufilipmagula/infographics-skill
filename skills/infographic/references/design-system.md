@@ -139,7 +139,7 @@ Neutral hex values for canvas/SVG/Chart.js: slate-900 `#0f172a`, -800 `#1e293b`,
 
 ## 5. Iconography
 
-**Brand mark (header title icon):** the Yunex SVG in `assets/template.html` (`h-11 w-auto`), placed directly in the header — no tile, no background, no shadow (transparent). The left bar's top-left and bottom-left corners are rounded by the SVG's own `clipPath`. Copy it exactly (viewBox, clipPath, gradient, path); it appears once per page, in both light and dark themes.
+**Brand mark (header title icon):** the Yunex SVG in `assets/template.html` (`h-11 w-auto`), placed directly in the header — no tile, no background, no shadow (transparent). The left bar's top-left and bottom-left corners are rounded by the SVG's own `clipPath`. Copy it exactly (viewBox, clipPath, gradient, path); it appears once per page, in both light and dark themes. The same mark is the favicon: a data-URI `<link rel="icon">` in the template `<head>` (square-padded viewBox) — copy it as is.
 
 - Lucide only: `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>` and call `lucide.createIcons()` once after load **and again after every innerHTML render**.
 - Sizes: inline `w-3.5 h-3.5`/`w-4 h-4`, tile `w-5 h-5` in `w-10 h-10 rounded-lg` tile, watermark `w-56 h-56 opacity-10`.

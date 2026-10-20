@@ -111,7 +111,7 @@ where I can paste a hostname and see each segment explained.
 ### What you get
 
 - One self-contained `<topic>_infographic.html` file in your target folder. Open it in any browser; it needs an internet connection for the CDN fonts and libraries.
-- An **Article / Slides** switch in the header. In slides mode, the bottom bar lists the slide titles so you can jump to any slide; when there are too many to fit, the `^` button opens the full list. You can also use `←` / `→`, PageUp/PageDown, Home/End or swipe; `#slide-3` in the URL opens slide 3. Printing in slides mode gives one slide per page.
+- An **Article / Slides** switch in the header. In slides mode, the bottom bar lists the slide titles so you can jump to any slide; when there are too many to fit, the `^` button opens the full list. The zoom controls next to prev/next scale only the slide content (keys `-`, `0` for 100%, `+`, and `W` for fit to width). You can also use `←` / `→`, PageUp/PageDown, Home/End or swipe; `#slide-3` in the URL opens slide 3. Printing in slides mode gives one slide per page.
 - A layout chosen to fit your content:
 
 | Archetype | Good for | Example |
