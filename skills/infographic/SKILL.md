@@ -1,6 +1,6 @@
 ---
 name: infographic
-description: Use when the user asks for an infographic, one-pager, visual summary, interactive explainer, report page, process/timeline/architecture/org diagram, HTML slide deck / presentation, or "make this visual" as an HTML file — or wants a new page matching the Advanced Perception / awareAI / Yunex Traffic house style of the existing infographics.
+description: Use when the user asks for an infographic, one-pager, visual summary, interactive explainer, report page, process/timeline/architecture/org diagram, HTML slide deck / presentation, or "make this visual" as an HTML file — or wants a new page matching the Yunex Traffic house style of the existing infographics.
 ---
 
 # House-Style HTML Infographics

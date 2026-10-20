@@ -1,12 +1,12 @@
 # Infographics — Claude Code plugin
 
-Lets Claude make single-file interactive HTML infographics in the Advanced Perception house style: Tailwind, Inter + JetBrains Mono, slate neutrals, fixed semantic accent colors, Lucide icons and Chart.js. Every page can be read as a scrolling **article** or presented as **slides**.
+Lets Claude make single-file interactive HTML infographics in the Yunex Traffic house style: Tailwind, Inter + JetBrains Mono, slate neutrals, fixed semantic accent colors, Lucide icons and Chart.js. Every page can be read as a scrolling **article** or presented as **slides**.
 
 ## What's inside
 
 ```
 .claude-plugin/
-  marketplace.json      # marketplace "advanced-perception" listing this plugin
+  marketplace.json      # marketplace "yunex-traffic" listing this plugin
   plugin.json           # plugin "infographics"
 skills/infographic/
   SKILL.md              # workflow, archetypes, rules, checklist
@@ -37,7 +37,7 @@ or at the hosted Git repository:
 ### 2. Install the plugin
 
 ```
-/plugin install infographics@advanced-perception
+/plugin install infographics@yunex-traffic
 ```
 
 You can also run `/plugin` with no arguments and pick **infographics** from the menu. Restart Claude Code if it asks you to.
@@ -49,8 +49,8 @@ Run `/plugin` and confirm that **infographics** is listed as enabled. The skill 
 ### Updating and removing
 
 ```
-/plugin marketplace update advanced-perception   # pull the latest version
-/plugin uninstall infographics@advanced-perception
+/plugin marketplace update yunex-traffic   # pull the latest version
+/plugin uninstall infographics@yunex-traffic
 ```
 
 ### Team-wide setup (optional)
@@ -60,12 +60,12 @@ To have the plugin offered automatically to everyone working in a repository, ad
 ```json
 {
   "extraKnownMarketplaces": {
-    "advanced-perception": {
+    "yunex-traffic": {
       "source": { "source": "git", "url": "https://<host>/<repo>.git" }
     }
   },
   "enabledPlugins": {
-    "infographics@advanced-perception": true
+    "infographics@yunex-traffic": true
   }
 }
 ```

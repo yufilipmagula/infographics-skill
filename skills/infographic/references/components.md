@@ -17,7 +17,7 @@ Interactive: 17. Tabs · 18. Stepper + detail · 19. Inspector drawer · 20. Mod
       <svg class="h-11 w-auto shrink-0" viewBox="-6.415 0 51.584 56.005" role="img" aria-label="Yunex Traffic"><defs><linearGradient id="brand-mark-gradient" x1="0.904" x2="-0.737" y1="1.287" y2="-0.774" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#affad7"/><stop offset="0.44" stop-color="#9dbbff"/><stop offset="1" stop-color="#1e2ed9"/></linearGradient><clipPath id="brand-mark-clip"><path d="M3.585 0H45.169V56.005H3.585A10 10 0 0 1-6.415 46.005V10A10 10 0 0 1 3.585 0Z"/></clipPath></defs><g clip-path="url(#brand-mark-clip)"><path fill="url(#brand-mark-gradient)" d="M-4648.054-117.8h-6.686l14.511-19.737 26.36-36.26h6.329l-20.391 28.186 20.4 27.812h-6.031l-16.856-22.928-3.117 4.289 13.7 18.637-28.208-.013-.014.019Zm-11.061-2.578v-50.858l18.7 25.429-18.7 25.427Zm21.832-29.693-17.449-23.728h6.125l.017.021 28.75-.015-17.441 23.722Z" transform="translate(4652.7 173.8)"/></g></svg>
       <div>
         <div class="flex items-center gap-2">
-          <span class="text-[10px] uppercase font-extrabold tracking-widest text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">Advanced Perception</span>
+          <span class="text-[10px] uppercase font-extrabold tracking-widest text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">Team or product</span>
           <span class="text-xs text-slate-500 font-mono">v1.0 • Category</span>
         </div>
         <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 mt-0.5">Title of the Infographic</h1>
@@ -337,7 +337,7 @@ Formal summary sections: `<article class="bg-white border border-slate-200 round
 ```html
 <footer class="mt-16 border-t border-slate-200 bg-white py-6 text-xs text-slate-500">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-    <p>© 2026 Yunex Traffic – Advanced Perception</p>
+    <p>© 2026 Yunex Traffic</p>
     <div class="flex items-center gap-4 text-slate-400">
       <span>Source: <strong class="text-slate-700">…</strong></span><span>•</span><span>Report date <span class="font-mono">2026-10-19</span></span>
     </div>

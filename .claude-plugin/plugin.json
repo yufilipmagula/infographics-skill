@@ -1,9 +1,9 @@
 {
   "name": "infographics",
   "version": "0.1.0",
-  "description": "Create single-file interactive HTML infographics in the Advanced Perception house style (Tailwind, Inter + JetBrains Mono, slate neutrals, semantic accents, Chart.js, Lucide).",
+  "description": "Create single-file interactive HTML infographics in the company house style (Tailwind, Inter + JetBrains Mono, slate neutrals, semantic accents, Chart.js, Lucide).",
   "author": {
-    "name": "Advanced Perception"
+    "name": "Yunex Traffic"
   },
   "keywords": ["infographic", "html", "tailwind", "report", "diagram", "design-system"]
 }

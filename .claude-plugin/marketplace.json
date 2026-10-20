@@ -1,14 +1,14 @@
 {
-  "name": "advanced-perception",
-  "description": "Advanced Perception internal Claude Code plugins.",
+  "name": "yunex-traffic",
+  "description": "Yunex Traffic internal Claude Code plugins.",
   "owner": {
-    "name": "Advanced Perception"
+    "name": "Yunex Traffic"
   },
   "plugins": [
     {
       "name": "infographics",
       "source": "./",
-      "description": "House-style single-file HTML infographics (reports, process explainers, spec anatomies, diagrams)."
+      "description": "Single-file HTML infographics in the company house style (reports, process explainers, spec anatomies, diagrams)."
     }
   ]
 }
