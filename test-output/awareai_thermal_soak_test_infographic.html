@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magic Box Thermal Soak Test | Advanced Perception</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script src="https://unpkg.com/lucide@1.59.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    @media print {
+      header { position: static !important; }
+      .no-print { display: none !important; }
+      section, article, .print-avoid-break { break-inside: avoid; }
+    }
+
+    /* ---- Deck: article / slides modes (keep as is) ---- */
+    body:not([data-mode="slides"]) .slides-only { display: none !important; }
+    body[data-mode="slides"] footer, body[data-mode="slides"] .article-only { display: none !important; }
+    body[data-mode="slides"] main [data-panel] { display: contents !important; }
+    body[data-mode="slides"] main > :not([data-slide]):not([data-panel]),
+    body[data-mode="slides"] main [data-panel] > :not([data-slide]) { display: none !important; }
+    body[data-mode="slides"] main [data-slide] { margin-top: auto !important; margin-bottom: auto !important; }
+    @media screen {
+      body[data-mode="slides"] { height: 100vh; height: 100dvh; overflow: hidden; }
+      body[data-mode="slides"] #slide-stage { overflow-y: auto; }
+      body[data-mode="slides"] main { min-height: 100%; display: flex; flex-direction: column; }
+      body[data-mode="slides"] main [data-slide]:not(.is-active) { display: none !important; }
+      body[data-mode="slides"] main [data-slide].is-active { animation: slide-in .25s ease-out; }
+      body.panel-collapsed #slide-panel { display: none !important; }
+    }
+    @media screen and (max-width: 1023px) {
+      #slide-panel { position: absolute; top: 0; bottom: 0; left: 0; z-index: 40; box-shadow: 0 25px 50px -12px rgb(15 23 42 / .25); }
+    }
+    @media print {
+      body[data-mode="slides"] main [data-slide] { break-after: page; }
+    }
+    @keyframes slide-in { from { opacity: 0; } to { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { main [data-slide].is-active { animation: none !important; } }
+  </style>
+</head>
+<!-- data-mode: "article" (default) or "slides". Viewer can switch in the header; #slide-3 in the URL opens slide 3. -->
+<body data-mode="article" class="bg-slate-50 text-slate-800 font-sans min-h-screen antialiased selection:bg-sky-600 selection:text-white flex flex-col">
+
+  <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <svg class="h-11 w-auto shrink-0" viewBox="-6.415 0 51.584 56.005" role="img" aria-label="Yunex Traffic"><defs><linearGradient id="brand-mark-gradient" x1="0.904" x2="-0.737" y1="1.287" y2="-0.774" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#affad7"/><stop offset="0.44" stop-color="#9dbbff"/><stop offset="1" stop-color="#1e2ed9"/></linearGradient><clipPath id="brand-mark-clip"><path d="M3.585 0H45.169V56.005H3.585A10 10 0 0 1-6.415 46.005V10A10 10 0 0 1 3.585 0Z"/></clipPath></defs><g clip-path="url(#brand-mark-clip)"><path fill="url(#brand-mark-gradient)" d="M-4648.054-117.8h-6.686l14.511-19.737 26.36-36.26h6.329l-20.391 28.186 20.4 27.812h-6.031l-16.856-22.928-3.117 4.289 13.7 18.637-28.208-.013-.014.019Zm-11.061-2.578v-50.858l18.7 25.429-18.7 25.427Zm21.832-29.693-17.449-23.728h6.125l.017.021 28.75-.015-17.441 23.722Z" transform="translate(4652.7 173.8)"/></g></svg>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] uppercase font-extrabold tracking-widest text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">Magic HW</span>
+            <span class="text-xs text-slate-500 font-mono">Thermal Soak • 55 °C / 72 h</span>
+          </div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 mt-0.5">Magic Box Thermal Soak Test</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 no-print">
+        <div class="text-right hidden sm:block">
+          <div class="text-xs font-medium text-slate-500">Throttle threshold</div>
+          <div class="text-sm font-mono font-bold text-amber-600">90 °C</div>
+        </div>
+        <nav data-mode-toggle aria-label="View mode" class="flex gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button type="button" data-mode-btn="article" class="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-all"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Article</button>
+          <button type="button" data-mode-btn="slides" class="px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-all"><i data-lucide="presentation" class="w-3.5 h-3.5"></i> Slides</button>
+        </nav>
+        <button onclick="window.print()" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-sm flex items-center gap-1.5 transition active:scale-95">
+          <i data-lucide="printer" class="w-4 h-4 text-slate-500"></i> Export / Print
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="deck" class="relative flex-1 min-h-0 flex">
+    <div class="flex-1 min-w-0 flex flex-col">
+      <div id="slide-stage" tabindex="-1" class="flex-1 min-h-0 outline-none">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          <!-- Slide 1: verdict + one KPI card per variant -->
+          <section data-slide="Verdict" class="space-y-6">
+            <div class="relative rounded-2xl border border-slate-200 bg-gradient-to-r from-white via-slate-50 to-white p-6 lg:p-8 overflow-hidden shadow-sm">
+              <div class="absolute top-0 right-0 h-64 w-64 bg-emerald-500/5 blur-3xl rounded-full -mr-20 -mt-20 pointer-events-none"></div>
+              <div class="absolute bottom-0 left-1/3 h-48 w-48 bg-sky-500/5 blur-3xl rounded-full pointer-events-none"></div>
+              <div class="relative max-w-3xl space-y-4">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
+                  Three enclosure variants, 72 hours at 55 °C:<br>
+                  <span class="bg-gradient-to-r from-sky-600 to-emerald-600 bg-clip-text text-transparent">Variant C (heat pipe) recommended for field deployment</span>
+                </h2>
+                <p class="text-sm md:text-base text-slate-600 leading-relaxed">
+                  The passive heatsink (A) exceeded the <strong class="text-slate-900">90 °C</strong> throttle threshold and lost inference throughput.
+                  Both B (fan) and C (heat pipe) stayed below it with a stable <strong class="text-slate-900">25 FPS</strong>.
+                  C is preferred because it has <strong class="text-slate-900">no moving parts</strong> &mdash; fan MTBF is a concern in roadside cabinets.
+                </p>
+                <div class="flex flex-wrap gap-3 pt-1 text-xs font-mono text-slate-600">
+                  <span class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm"><i data-lucide="thermometer" class="w-3.5 h-3.5 text-sky-600"></i> 55 °C ambient</span>
+                  <span class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm"><i data-lucide="clock" class="w-3.5 h-3.5 text-sky-600"></i> 72 h soak</span>
+                  <span class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm"><i data-lucide="video" class="w-3.5 h-3.5 text-sky-600"></i> 6 camera streams</span>
+                  <span class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm"><i data-lucide="box" class="w-3.5 h-3.5 text-sky-600"></i> 3 enclosure variants</span>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="kpi-grid"></div>
+          </section>
+
+          <!-- Slide 2 -->
+          <section data-slide="Temperature &amp; FPS" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">Max SoC temperature</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">Peak over the 72 h soak at 55 °C ambient</p>
+                </div>
+                <span class="self-start sm:self-auto text-xs font-mono px-2.5 py-1 rounded bg-amber-50 text-amber-700 border border-amber-200 font-medium">Throttle: 90 °C</span>
+              </div>
+              <div class="relative h-64"><canvas id="chart-temp"></canvas></div>
+              <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600">
+                <span class="flex items-center"><span class="w-4 border-t-2 border-dashed border-amber-500 mr-2"></span>Throttle threshold <strong class="ml-1 font-mono text-slate-800">90 °C</strong></span>
+                <span class="flex items-center"><span class="w-4 border-t-2 border-dashed border-slate-400 mr-2"></span>Chamber ambient <strong class="ml-1 font-mono text-slate-800">55 °C</strong></span>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">Average inference FPS</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">6 camera streams under thermal load</p>
+                </div>
+                <span class="self-start sm:self-auto text-xs font-mono px-2.5 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200 font-medium">Baseline: 25 FPS</span>
+              </div>
+              <div class="relative h-64"><canvas id="chart-fps"></canvas></div>
+              <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600">
+                <span class="flex items-center"><span class="w-4 border-t-2 border-dashed border-slate-400 mr-2"></span>Unthrottled baseline <strong class="ml-1 font-mono text-slate-800">25 FPS</strong></span>
+                <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 mr-2"></span>A: <strong class="ml-1 font-mono text-rose-600">25 → 17 FPS</strong></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Slide 3 -->
+          <section data-slide="Throttling timeline" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Throttling over the 72 h soak</h3>
+                <p class="text-xs text-slate-500 mt-0.5">When each variant ran unthrottled vs. throttled</p>
+              </div>
+              <span class="self-start sm:self-auto text-xs font-mono px-2.5 py-1 rounded bg-slate-100 text-slate-700 border border-slate-200 font-medium">0 – 72 h</span>
+            </div>
+            <div id="timeline" class="space-y-4"></div>
+            <div class="mt-2 flex justify-between text-[10px] font-mono text-slate-400 sm:pl-40">
+              <span>0 h</span><span>24 h</span><span>48 h</span><span>72 h</span>
+            </div>
+            <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-600">
+              <span class="flex items-center gap-1.5 font-medium text-slate-700"><span class="w-3 h-3 rounded bg-slate-100 border border-slate-300"></span>Unthrottled</span>
+              <span class="flex items-center gap-1.5 font-medium text-slate-700"><span class="w-3 h-3 rounded bg-rose-100 border border-rose-500"></span>Throttled (SoC ≥ 90 °C)</span>
+            </div>
+          </section>
+
+          <!-- Slide 4 -->
+          <section data-slide="Variant comparison" class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div class="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Variant comparison</h3>
+                <p class="text-xs text-slate-500">Thermal, performance and cost results side by side</p>
+              </div>
+              <span class="self-start sm:self-auto text-xs font-mono font-semibold bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full">Throttle: 90 °C</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-100/70 text-slate-600 font-mono text-xs uppercase tracking-wider border-b border-slate-200">
+                  <tr id="table-head"></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-mono" id="table-body"></tbody>
+              </table>
+            </div>
+            <div class="px-6 py-3 bg-slate-50 text-[11px] text-slate-500 border-t border-slate-200 space-y-1">
+              <p>* Derived: headroom = 90 °C − max SoC temp; rise over ambient = max SoC temp − 55 °C; FPS loss = (25 − 17) / 25.</p>
+              <p>† BOM deltas as reported, relative to Variant A. C vs B derived: €14 − €9 = +€5.</p>
+            </div>
+          </section>
+
+          <!-- Slide 5 -->
+          <article data-slide="Summary" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+            <div>
+              <h3 class="text-base font-bold text-slate-900">Summary</h3>
+              <p class="text-xs text-slate-500 mt-0.5">HW team Brno • report <span class="font-mono">2026-10-12</span></p>
+            </div>
+            <div class="space-y-2">
+              <h4 class="text-base font-bold text-slate-900">1. Objective</h4>
+              <p class="text-sm leading-relaxed text-slate-700">Compare three Magic box enclosure cooling variants under sustained high ambient temperature and full analytics load, and select one for field deployment.</p>
+            </div>
+            <div class="space-y-2">
+              <h4 class="text-base font-bold text-slate-900">2. Setup</h4>
+              <p class="text-sm leading-relaxed text-slate-700">Climate chamber at <span class="font-mono">55 °C</span> ambient for <span class="font-mono">72 h</span>, <span class="font-mono">6</span> camera streams. Throttle threshold of the SoC is <span class="font-mono">90 °C</span>.</p>
+            </div>
+            <div class="space-y-2">
+              <h4 class="text-base font-bold text-slate-900">3. Results</h4>
+              <ul class="space-y-2 text-sm text-slate-700">
+                <li class="flex items-start gap-2"><i data-lucide="x-circle" class="w-4 h-4 text-rose-500 shrink-0 mt-0.5"></i><span><strong class="text-slate-900">A — passive heatsink:</strong> max <span class="font-mono">97 °C</span>, throttling from hour <span class="font-mono">9</span>, average inference dropped <span class="font-mono">25 → 17 FPS</span>.</span></li>
+                <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-blue-600 shrink-0 mt-0.5"></i><span><strong class="text-slate-900">B — heatsink + 40 mm fan:</strong> max <span class="font-mono">81 °C</span>, no throttling, stable <span class="font-mono">25 FPS</span>; fan noise <span class="font-mono">32 dBA</span>; BOM <span class="font-mono">+€9</span> vs A.</span></li>
+                <li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5"></i><span><strong class="text-slate-900">C — heatsink + heat pipe to enclosure wall:</strong> max <span class="font-mono">84 °C</span>, no throttling, stable <span class="font-mono">25 FPS</span>; no moving parts; BOM <span class="font-mono">+€14</span> vs A.</span></li>
+              </ul>
+            </div>
+            <div class="space-y-2">
+              <h4 class="text-base font-bold text-slate-900">4. Recommendation</h4>
+              <p class="text-sm leading-relaxed text-slate-700"><strong class="text-slate-900">Variant C</strong> for field deployment. B runs <span class="font-mono">3 °C</span> cooler, but relies on a fan, and fan MTBF is a concern in roadside cabinets. C meets the thermal requirement without moving parts for <span class="font-mono">+€5</span> over B.</p>
+            </div>
+          </article>
+        </main>
+      </div>
+      <nav class="slides-only no-print shrink-0 border-t border-slate-200 bg-white/90 backdrop-blur">
+        <div class="h-0.5 bg-slate-100"><div id="slide-progress" class="h-full bg-sky-600 transition-all duration-300" style="width: 0"></div></div>
+        <div class="px-4 sm:px-6 py-2.5 flex items-center gap-3">
+          <button type="button" id="panel-toggle" title="Toggle slide panel" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition"><i data-lucide="panel-left" class="w-4 h-4"></i></button>
+          <div id="slide-chips" class="min-w-0 flex-1 flex items-center gap-1 overflow-hidden"></div>
+          <div id="slide-more-wrap" class="relative hidden">
+            <button type="button" id="slide-more" title="All slides" aria-haspopup="true" aria-expanded="false" aria-controls="slide-menu" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition"><i data-lucide="chevron-up" class="w-4 h-4 transition-transform"></i></button>
+            <div id="slide-menu" role="menu" class="hidden absolute bottom-full right-0 mb-3 z-50 w-72 max-h-[60vh] overflow-y-auto p-1.5 rounded-xl border border-slate-200 bg-white shadow-xl"></div>
+          </div>
+          <button type="button" id="slide-prev" title="Previous (←)" class="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+          <span id="slide-count" class="font-mono text-xs font-semibold text-slate-500 tabular-nums"></span>
+          <button type="button" id="slide-next" title="Next (→)" class="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition active:scale-95 disabled:opacity-40 disabled:pointer-events-none"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+        </div>
+      </nav>
+    </div>
+    <!-- After <main> in the DOM so document.querySelector() in page code never hits a thumbnail clone -->
+    <aside id="slide-panel" aria-label="Slides" class="slides-only no-print order-first w-64 shrink-0 bg-white border-r border-slate-200 flex flex-col">
+      <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+        <span class="text-[10px] uppercase font-extrabold tracking-widest text-slate-500">Slides</span>
+        <span class="text-[10px] font-mono text-slate-400">← → to navigate</span>
+      </div>
+      <div id="slide-list" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+    </aside>
+  </div>
+
+  <footer class="mt-16 border-t border-slate-200 bg-white py-6 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© 2026 Yunex Traffic – Advanced Perception</p>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span>Source: <strong class="text-slate-700">HW team Brno – thermal soak test</strong></span>
+        <span>•</span>
+        <span>Report date <span class="font-mono">2026-10-12</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ---- Data (single source of truth for everything rendered by JS) ----
+    const DATA = {
+      ambient: 55,
+      throttle: 90,
+      baselineFps: 25,
+      durationH: 72,
+      variants: [
+        { id: 'A', name: 'Passive heatsink', icon: 'square-stack', accent: 'rose', hex: '#f43f5e', hexDark: '#e11d48',
+          maxTemp: 97, throttled: true, throttleStartH: 9, fps: 17, fanNoise: null, movingParts: false, bom: 0,
+          verdict: 'Throttles', footerIcon: 'x-circle',
+          footer: 'Exceeds 90 °C threshold — throughput lost' },
+        { id: 'B', name: 'Heatsink + 40 mm fan', icon: 'fan', accent: 'blue', hex: '#2563eb', hexDark: '#1d4ed8',
+          maxTemp: 81, throttled: false, throttleStartH: null, fps: 25, fanNoise: 32, movingParts: true, bom: 9,
+          verdict: 'Pass', footerIcon: 'alert-triangle',
+          footer: 'Passes, but fan MTBF is a field risk' },
+        { id: 'C', name: 'Heatsink + heat pipe to wall', icon: 'thermometer-snowflake', accent: 'emerald', hex: '#10b981', hexDark: '#059669',
+          maxTemp: 84, throttled: false, throttleStartH: null, fps: 25, fanNoise: null, movingParts: false, bom: 14,
+          verdict: 'Recommended', footerIcon: 'check-circle-2', recommended: true,
+          footer: 'Passes with no moving parts' },
+      ],
+    };
+
+    // ---- Helpers ----
+    const el = (id) => document.getElementById(id);
+    const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const signed = (n, unit) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n) + unit;
+
+    // Full class strings per accent so Tailwind Play CDN picks them up.
+    const ACCENT = {
+      rose:    { num: 'text-rose-600',    label: 'text-rose-700',    badge: 'bg-rose-50 text-rose-700 border-rose-200',          bar: 'border-t-rose-500',    dot: 'bg-rose-500',    pill: 'bg-rose-600' },
+      blue:    { num: 'text-blue-600',    label: 'text-blue-700',    badge: 'bg-blue-50 text-blue-700 border-blue-200',          bar: 'border-t-blue-600',    dot: 'bg-blue-600',    pill: 'bg-blue-600' },
+      emerald: { num: 'text-emerald-600', label: 'text-emerald-700', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', bar: 'border-t-emerald-500', dot: 'bg-emerald-500', pill: 'bg-emerald-600' },
+    };
+
+    // ---- KPI cards ----
+    function renderKpis() {
+      el('kpi-grid').innerHTML = DATA.variants.map((v) => {
+        const a = ACCENT[v.accent];
+        const headroom = DATA.throttle - v.maxTemp;
+        const headroomTxt = headroom >= 0 ? `${headroom} °C below throttle` : `${Math.abs(headroom)} °C over throttle`;
+        const ring = v.recommended ? 'border-2 border-emerald-300' : 'border border-slate-200';
+        return `
+        <div class="relative bg-white ${ring} border-t-4 ${a.bar} rounded-2xl p-6 shadow-sm hover:shadow-md transition flex flex-col">
+          ${v.recommended ? `<div class="absolute -top-3 right-4 ${a.pill} text-white text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase shadow-sm">Recommended</div>` : ''}
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+              <i data-lucide="${escapeHtml(v.icon)}" class="w-4 h-4 ${a.num}"></i>Variant ${escapeHtml(v.id)}
+            </span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded border bg-emerald-50 text-emerald-700 border-emerald-200">Measured</span>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mt-2">${escapeHtml(v.name)}</h3>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-4xl font-extrabold font-mono tracking-tight ${a.num}">${v.maxTemp} °C</span>
+            <span class="text-xs font-mono font-medium text-slate-500">max SoC temp</span>
+          </div>
+          <div class="mt-4 grid grid-cols-2 gap-3 font-mono text-center">
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200/80">
+              <span class="block text-lg font-black ${v.throttled ? 'text-rose-600' : 'text-slate-900'}">${v.throttled ? `${DATA.baselineFps}→${v.fps}` : v.fps}</span>
+              <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Avg FPS</span>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200/80">
+              <span class="block text-lg font-black text-slate-900">${v.bom === 0 ? 'base' : '+€' + v.bom}</span>
+              <span class="block text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">BOM vs A</span>
+            </div>
+          </div>
+          <p class="mt-3 text-xs leading-relaxed text-slate-600 flex-1">
+            ${v.throttled
+              ? `Throttling started at <strong class="text-slate-900 font-mono">hour ${v.throttleStartH}</strong>; <strong class="text-slate-900 font-mono">${headroomTxt}</strong>.`
+              : `No throttling over <span class="font-mono">${DATA.durationH} h</span>; <strong class="text-slate-900 font-mono">${headroomTxt}</strong>${v.fanNoise ? `; fan noise <strong class="text-slate-900 font-mono">${v.fanNoise} dBA</strong>` : ''}${!v.movingParts ? '; <strong class="text-slate-900">no moving parts</strong>' : ''}.`}
+          </p>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs font-semibold ${v.id === 'B' ? 'text-amber-700' : a.label}">
+            <i data-lucide="${v.footerIcon}" class="w-4 h-4 shrink-0"></i> ${escapeHtml(v.footer)}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ---- Throttle timeline ----
+    function renderTimeline() {
+      el('timeline').innerHTML = DATA.variants.map((v) => {
+        const a = ACCENT[v.accent];
+        const startPct = v.throttled ? (v.throttleStartH / DATA.durationH) * 100 : 100;
+        return `
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <div class="sm:w-36 shrink-0 flex items-center gap-2 text-xs">
+            <span class="w-2.5 h-2.5 rounded-full ${a.dot}"></span>
+            <span class="font-bold text-slate-900">Variant ${escapeHtml(v.id)}</span>
+            <span class="font-mono text-slate-500">${v.maxTemp} °C</span>
+          </div>
+          <div class="relative w-full sm:flex-1 min-w-0 h-8 shrink-0 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden">
+            ${v.throttled ? `
+              <div class="absolute inset-y-0 right-0 bg-rose-100 border-l-2 border-rose-500 flex items-center px-3" style="left:${startPct}%">
+                <span class="text-[11px] font-mono font-semibold text-rose-700 whitespace-nowrap">Throttled from h ${v.throttleStartH} · ${DATA.baselineFps} → ${v.fps} FPS</span>
+              </div>
+              <div class="absolute inset-y-0 left-0 flex items-center px-2" style="width:${startPct}%">
+                <span class="text-[10px] font-mono text-slate-500 truncate">${v.throttleStartH} h</span>
+              </div>` : `
+              <div class="absolute inset-0 flex items-center px-3">
+                <span class="text-[11px] font-mono font-semibold text-slate-600">No throttling · ${v.fps} FPS stable</span>
+              </div>`}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ---- Table ----
+    function renderTable() {
+      const vs = DATA.variants;
+      el('table-head').innerHTML = `<th class="py-3.5 px-4 sm:px-6">Metric</th>` + vs.map((v) =>
+        `<th class="py-3.5 px-4"><span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full ${ACCENT[v.accent].dot}"></span>Variant ${escapeHtml(v.id)}</span></th>`).join('');
+
+      const good = 'font-bold text-emerald-700', bad = 'font-bold text-rose-600', neutral = 'text-slate-800', muted = 'text-slate-400';
+      const rows = [
+        { name: 'Cooling concept', sub: 'Enclosure variant', cells: vs.map((v) => [escapeHtml(v.name), 'font-sans ' + neutral]) },
+        { name: 'Max SoC temperature', sub: `Threshold ${DATA.throttle} °C`, cells: vs.map((v) => [`${v.maxTemp} °C`, v.maxTemp >= DATA.throttle ? bad : good]) },
+        { name: 'Headroom to throttle*', sub: 'Derived', cells: vs.map((v) => [signed(DATA.throttle - v.maxTemp, ' °C'), v.maxTemp >= DATA.throttle ? bad : 'font-semibold text-slate-700']) },
+        { name: 'Rise over ambient*', sub: `Derived, ambient ${DATA.ambient} °C`, cells: vs.map((v) => [`+${v.maxTemp - DATA.ambient} °C`, 'text-slate-700']) },
+        { name: 'Throttling', sub: `During ${DATA.durationH} h soak`, cells: vs.map((v) => [v.throttled ? `from h ${v.throttleStartH}` : 'none', v.throttled ? bad : good]) },
+        { name: 'Avg inference FPS', sub: `${DATA.baselineFps} FPS unthrottled`, cells: vs.map((v) => [v.throttled ? `${DATA.baselineFps} → ${v.fps} FPS` : `${v.fps} FPS stable`, v.throttled ? bad : good]) },
+        { name: 'FPS loss*', sub: 'Derived', cells: vs.map((v) => { const l = DATA.baselineFps - v.fps; return l ? [`−${l} FPS (−${Math.round(l / DATA.baselineFps * 100)} %)`, bad] : ['0 FPS', muted]; }) },
+        { name: 'Fan noise', sub: 'Acoustic', cells: vs.map((v) => v.fanNoise ? [`${v.fanNoise} dBA`, 'font-semibold text-amber-700'] : ['— (no fan)', muted]) },
+        { name: 'Moving parts', sub: 'Field reliability', cells: vs.map((v) => v.movingParts ? ['yes (fan)', 'font-semibold text-amber-700'] : ['none', good]) },
+        { name: 'BOM vs A†', sub: 'Cost delta', cells: vs.map((v) => v.bom ? [`+€${v.bom}`, 'font-semibold text-slate-800'] : ['baseline', muted]) },
+      ];
+      el('table-body').innerHTML = rows.map((r) => `
+        <tr class="hover:bg-slate-50/80 transition">
+          <td class="py-3.5 px-4 sm:px-6 font-sans font-medium text-slate-900">${escapeHtml(r.name)}
+            <span class="block text-xs font-normal text-slate-500">${escapeHtml(r.sub)}</span></td>
+          ${r.cells.map(([txt, cls]) => `<td class="py-3.5 px-4 ${cls}">${txt}</td>`).join('')}
+        </tr>`).join('') + `
+        <tr class="bg-slate-100 text-sm font-bold">
+          <td class="py-3.5 px-4 sm:px-6 font-sans text-slate-900">Verdict</td>
+          ${vs.map((v) => `<td class="py-3.5 px-4"><span class="text-xs font-semibold px-2 py-0.5 rounded border ${ACCENT[v.accent].badge}">${escapeHtml(v.verdict)}</span></td>`).join('')}
+        </tr>`;
+    }
+
+    // ---- Chart.js house theme ----
+    if (window.Chart) {
+      Chart.defaults.font.family = 'Inter';
+      Chart.defaults.color = '#64748b';
+      Chart.defaults.borderColor = '#e2e8f0';
+      Chart.defaults.plugins.legend.position = 'bottom';
+      Chart.defaults.plugins.legend.labels.boxWidth = 14;
+      Chart.defaults.plugins.legend.labels.padding = 16;
+      Chart.defaults.plugins.legend.labels.color = '#1e293b';
+      Object.assign(Chart.defaults.plugins.tooltip, {
+        backgroundColor: '#0f172a', titleColor: '#f8fafc', bodyColor: '#e2e8f0',
+        borderColor: '#334155', borderWidth: 1, padding: 10,
+      });
+    }
+
+    const thresholdLines = {
+      id: 'thresholdLines',
+      afterDatasetsDraw(chart, _args, opts) {
+        const { ctx, chartArea: { left, right }, scales: { y } } = chart;
+        (opts.lines || []).forEach(({ value, label, color = '#f59e0b', dash = [6, 4] }) => {
+          const py = y.getPixelForValue(value);
+          ctx.save();
+          ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.setLineDash(dash);
+          ctx.beginPath(); ctx.moveTo(left, py); ctx.lineTo(right, py); ctx.stroke();
+          ctx.setLineDash([]); ctx.fillStyle = color; ctx.font = '600 10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'right'; ctx.fillText(label, right - 4, py - 4);
+          ctx.restore();
+        });
+      },
+    };
+
+    function renderCharts() {
+      if (!window.Chart) return;
+      const labels = DATA.variants.map((v) => `Variant ${v.id}`);
+      const fill = DATA.variants.map((v) => v.hex);
+      const border = DATA.variants.map((v) => v.hexDark);
+      const common = (unit, min, max) => ({
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            title: (items) => { const v = DATA.variants[items[0].dataIndex]; return `Variant ${v.id} — ${v.name}`; },
+            label: (c) => ` ${c.parsed.y} ${unit}`,
+          } },
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: { min, max, ticks: { callback: (v) => v + ' ' + unit } },
+        },
+      });
+
+      new Chart(el('chart-temp'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Max SoC temp', data: DATA.variants.map((v) => v.maxTemp), backgroundColor: fill, borderColor: border, borderWidth: 1, borderRadius: 4, maxBarThickness: 64 }] },
+        options: { ...common('°C', 40, 100), plugins: { ...common('°C').plugins, thresholdLines: { lines: [
+          { value: DATA.throttle, label: `Throttle ${DATA.throttle} °C` },
+          { value: DATA.ambient, label: `Ambient ${DATA.ambient} °C`, color: '#94a3b8' },
+        ] } } },
+        plugins: [thresholdLines],
+      });
+
+      new Chart(el('chart-fps'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Avg inference FPS', data: DATA.variants.map((v) => v.fps), backgroundColor: fill, borderColor: border, borderWidth: 1, borderRadius: 4, maxBarThickness: 64 }] },
+        options: { ...common('FPS', 0, 30), plugins: { ...common('FPS').plugins, thresholdLines: { lines: [
+          { value: DATA.baselineFps, label: `Baseline ${DATA.baselineFps} FPS`, color: '#94a3b8' },
+        ] } } },
+        plugins: [thresholdLines],
+      });
+    }
+
+    // ---- Init ----
+    document.addEventListener('DOMContentLoaded', () => {
+      renderKpis();
+      renderTimeline();
+      renderTable();
+      renderCharts();
+      lucide.createIcons();
+    });
+  </script>
+
+  <script>
+    // ---- Deck: article / slides modes (keep as is; runs after the page script) ----
+    (() => {
+      const body = document.body;
+      const $ = (id) => document.getElementById(id);
+      const pad = (n) => String(n).padStart(2, '0');
+      const MODE_ON = 'bg-white text-slate-900 font-semibold shadow-sm border border-slate-200/50'.split(' ');
+      const MODE_OFF = 'text-slate-600 font-medium hover:text-slate-900 hover:bg-slate-200/50'.split(' ');
+      const THUMB_ON = 'bg-sky-50 border-sky-300 ring-2 ring-sky-500/20'.split(' ');
+      const THUMB_OFF = 'border-transparent hover:bg-slate-50 hover:border-slate-200'.split(' ');
+      const CHIP_ON = 'bg-sky-50 text-sky-800 ring-1 ring-inset ring-sky-200'.split(' ');
+      const CHIP_OFF = 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'.split(' ');
+      const ITEM_ON = 'bg-sky-50 text-sky-800'.split(' ');
+      const ITEM_OFF = 'text-slate-700 hover:bg-slate-50'.split(' ');
+      const THUMB_W = 1280, CHIP_GAP = 4;
+      let slides = [], thumbs = [], chips = [], items = [], current = 0, mode = null, refreshT;
+
+      const headerH = () => document.querySelector('header').offsetHeight;
+      const slideTitle = (i) => slides[i].dataset.slide || `Slide ${i + 1}`;
+      const slideGroup = (s) => s.closest('[data-panel]')?.dataset.panel ?? null;
+
+      function groupHeader(g, cls) {
+        const h = document.createElement('div');
+        h.className = `${cls} text-[10px] font-extrabold uppercase tracking-widest text-slate-400`;
+        h.textContent = document.querySelector(`[data-tab="${CSS.escape(g)}"]`)?.textContent.trim() || g;
+        return h;
+      }
+
+      function toggleState(nodes, on, off) {
+        nodes.forEach((n, k) => {
+          const active = k === current;
+          on.forEach((c) => n.classList.toggle(c, active));
+          off.forEach((c) => n.classList.toggle(c, !active));
+          active ? n.setAttribute('aria-current', 'true') : n.removeAttribute('aria-current');
+        });
+      }
+
+      function cloneInto(i) {
+        const src = slides[i], copy = src.cloneNode(true);
+        copy.classList.remove('is-active');
+        copy.removeAttribute('data-slide');
+        copy.style.margin = '0';
+        [copy, ...copy.querySelectorAll('[id]')].forEach((n) => n.removeAttribute('id'));
+        const canvases = src.querySelectorAll('canvas');
+        copy.querySelectorAll('canvas').forEach((c, k) => { try { c.getContext('2d').drawImage(canvases[k], 0, 0); } catch { /* not drawable yet */ } });
+        thumbs[i].querySelector('.thumb-inner').replaceChildren(copy);
+      }
+
+      function buildPanel() {
+        const list = $('slide-list');
+        list.replaceChildren();
+        thumbs = [];
+        let group = null;
+        slides.forEach((s, i) => {
+          const g = slideGroup(s);
+          if (g && g !== group) list.append(groupHeader(g, 'px-2 pt-3 pb-1'));
+          group = g;
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'w-full text-left p-2 rounded-xl border transition';
+          b.innerHTML = `<div class="flex items-center gap-2 mb-1.5 px-0.5"><span class="font-mono text-[10px] font-bold text-sky-700">${pad(i + 1)}</span><span class="thumb-title text-xs font-semibold text-slate-700 truncate"></span></div>
+            <div class="thumb-frame relative w-full aspect-[16/10] overflow-hidden rounded-lg border border-slate-200 bg-slate-50 pointer-events-none"><div class="thumb-inner absolute top-0 left-0 origin-top-left p-8" inert aria-hidden="true" style="width: ${THUMB_W}px"></div></div>`;
+          b.querySelector('.thumb-title').textContent = slideTitle(i);
+          b.addEventListener('click', () => { go(i); if (innerWidth < 1024) setPanel(false); });
+          list.append(b);
+          thumbs.push(b);
+          cloneInto(i);
+        });
+        lucide.createIcons();
+        buildBar();
+      }
+
+      function buildBar() {
+        const bar = $('slide-chips'), menu = $('slide-menu');
+        bar.replaceChildren();
+        menu.replaceChildren();
+        chips = [];
+        items = [];
+        let group = null;
+        slides.forEach((s, i) => {
+          const c = document.createElement('button');
+          c.type = 'button';
+          c.title = slideTitle(i);
+          c.className = 'shrink-0 min-w-0 max-w-[11rem] flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition';
+          c.innerHTML = `<span class="font-mono text-[10px] font-bold opacity-60">${pad(i + 1)}</span><span class="truncate"></span>`;
+          c.lastElementChild.textContent = slideTitle(i);
+          c.addEventListener('click', () => go(i));
+          bar.append(c);
+          chips.push(c);
+
+          const g = slideGroup(s);
+          if (g && g !== group) menu.append(groupHeader(g, 'px-2.5 pt-2.5 pb-1'));
+          group = g;
+          const m = document.createElement('button');
+          m.type = 'button';
+          m.setAttribute('role', 'menuitem');
+          m.className = 'w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-left text-xs font-semibold transition';
+          m.innerHTML = `<span class="font-mono text-[10px] font-bold text-sky-700">${pad(i + 1)}</span><span class="truncate"></span>`;
+          m.lastElementChild.textContent = slideTitle(i);
+          m.addEventListener('click', () => { go(i); setMenu(false); });
+          menu.append(m);
+          items.push(m);
+        });
+      }
+
+      // Show every chip if they fit; otherwise the widest window around the current slide plus the "all slides" button.
+      function fitChips() {
+        if (mode !== 'slides' || !chips.length) return;
+        const bar = $('slide-chips'), wrap = $('slide-more-wrap');
+        chips.forEach((c) => c.classList.remove('hidden'));
+        chips.forEach((c) => c.classList.add('shrink-0'));
+        wrap.classList.add('hidden');
+        if (bar.scrollWidth <= bar.clientWidth) return;
+        wrap.classList.remove('hidden');
+        const avail = bar.clientWidth, w = chips.map((c) => c.offsetWidth);
+        let lo = current, hi = current, used = w[current];
+        for (let grew = true; grew;) {
+          grew = false;
+          if (hi + 1 < chips.length && used + CHIP_GAP + w[hi + 1] <= avail) { used += CHIP_GAP + w[++hi]; grew = true; }
+          if (lo > 0 && used + CHIP_GAP + w[lo - 1] <= avail) { used += CHIP_GAP + w[--lo]; grew = true; }
+        }
+        chips.forEach((c, k) => c.classList.toggle('hidden', k < lo || k > hi));
+        chips[current].classList.remove('shrink-0');
+      }
+
+      function setMenu(open) {
+        const menu = $('slide-menu'), btn = $('slide-more');
+        menu.classList.toggle('hidden', !open);
+        btn.setAttribute('aria-expanded', String(open));
+        btn.querySelector('svg')?.classList.toggle('rotate-180', open);
+        const item = items[current];
+        if (open && item) menu.scrollTop = item.offsetTop - (menu.clientHeight - item.offsetHeight) / 2;
+      }
+
+      function sizeThumbs() {
+        const w = thumbs[0]?.querySelector('.thumb-frame').clientWidth;
+        if (w) thumbs.forEach((t) => { t.querySelector('.thumb-inner').style.transform = `scale(${w / THUMB_W})`; });
+      }
+
+      function setPanel(open) {
+        body.classList.toggle('panel-collapsed', !open);
+        if (open) { sizeThumbs(); thumbs[current]?.scrollIntoView({ block: 'nearest' }); }
+        fitChips();
+      }
+
+      function go(i) {
+        const prev = current;
+        current = Math.max(0, Math.min(slides.length - 1, i));
+        if (prev !== current && slides[prev].classList.contains('is-active')) cloneInto(prev);
+        slides.forEach((s, k) => s.classList.toggle('is-active', k === current));
+        toggleState(thumbs, THUMB_ON, THUMB_OFF);
+        toggleState(chips, CHIP_ON, CHIP_OFF);
+        toggleState(items, ITEM_ON, ITEM_OFF);
+        fitChips();
+        thumbs[current].scrollIntoView({ block: 'nearest' });
+        $('slide-stage').scrollTop = 0;
+        $('slide-count').textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
+        $('slide-progress').style.width = `${((current + 1) / slides.length) * 100}%`;
+        $('slide-prev').disabled = current === 0;
+        $('slide-next').disabled = current === slides.length - 1;
+        history.replaceState(null, '', `#slide-${current + 1}`);
+        clearTimeout(refreshT);
+        refreshT = setTimeout(() => cloneInto(current), 1100);
+      }
+
+      function nearestSlide() {
+        const top = headerH() + 8;
+        const k = slides.findIndex((s) => s.offsetParent !== null && s.getBoundingClientRect().bottom > top);
+        return Math.max(0, k);
+      }
+
+      function revealInArticle(s) {
+        const panel = s.closest('[data-panel]');
+        if (panel?.classList.contains('hidden') && typeof window.switchTab === 'function') window.switchTab(panel.dataset.panel);
+        const y = current === 0 ? 0 : s.getBoundingClientRect().top + scrollY - headerH() - 16;
+        scrollTo({ top: y, behavior: 'instant' });
+      }
+
+      function setMode(next, start) {
+        if (next === 'slides') {
+          if (mode !== 'slides') { buildPanel(); current = start ?? nearestSlide(); }
+          body.dataset.mode = mode = 'slides';
+          sizeThumbs();
+          go(current);
+        } else {
+          clearTimeout(refreshT);
+          setMenu(false);
+          const wasSlides = mode === 'slides';
+          body.dataset.mode = mode = 'article';
+          history.replaceState(null, '', location.pathname + location.search);
+          if (wasSlides) revealInArticle(slides[current]);
+        }
+        document.querySelectorAll('[data-mode-btn]').forEach((b) => {
+          const on = b.dataset.modeBtn === mode;
+          MODE_ON.forEach((c) => b.classList.toggle(c, on));
+          MODE_OFF.forEach((c) => b.classList.toggle(c, !on));
+          b.setAttribute('aria-pressed', String(on));
+        });
+      }
+
+      const hashSlide = () => location.hash.match(/^#slides?(?:-(\d+))?$/);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        slides = [...document.querySelectorAll('main [data-slide]')].filter((s) => !s.parentElement.closest('[data-slide]'));
+        if (!slides.length) { document.querySelector('[data-mode-toggle]').remove(); body.dataset.mode = 'article'; return; }
+
+        document.querySelectorAll('[data-mode-btn]').forEach((b) => b.addEventListener('click', () => {
+          setMode(b.dataset.modeBtn);
+          if (mode === 'slides') $('slide-stage').focus({ preventScroll: true });
+        }));
+        $('slide-prev').addEventListener('click', () => go(current - 1));
+        $('slide-next').addEventListener('click', () => go(current + 1));
+        $('panel-toggle').addEventListener('click', () => setPanel(body.classList.contains('panel-collapsed')));
+        $('slide-more').addEventListener('click', () => setMenu($('slide-menu').classList.contains('hidden')));
+        document.addEventListener('click', (e) => { if (!e.target.closest('#slide-more-wrap')) setMenu(false); });
+        addEventListener('resize', () => { sizeThumbs(); fitChips(); });
+        document.fonts?.ready.then(fitChips);
+        addEventListener('hashchange', () => {
+          const m = hashSlide();
+          if (!m) return;
+          const i = m[1] ? m[1] - 1 : 0;
+          mode === 'slides' ? go(i) : setMode('slides', i);
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (mode !== 'slides' || e.altKey || e.ctrlKey || e.metaKey) return;
+          if (e.key === 'Escape' && !$('slide-menu').classList.contains('hidden')) { setMenu(false); $('slide-more').focus(); return; }
+          if (e.target.closest('input, textarea, select, [contenteditable]')) return;
+          const step = { ArrowRight: 1, PageDown: 1, ArrowLeft: -1, PageUp: -1 }[e.key];
+          if (step) go(current + step);
+          else if (e.key === 'Home') go(0);
+          else if (e.key === 'End') go(slides.length - 1);
+          else return;
+          e.preventDefault();
+        });
+
+        let tx = null, ty = 0;
+        const stage = $('slide-stage');
+        stage.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+        stage.addEventListener('touchend', (e) => {
+          if (mode !== 'slides' || tx === null || e.target.closest('.overflow-x-auto')) return;
+          const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+          tx = null;
+          if (Math.abs(dx) > 60 && Math.abs(dx) > 1.5 * Math.abs(dy)) go(current + (dx < 0 ? 1 : -1));
+        });
+
+        if (innerWidth < 1024) body.classList.add('panel-collapsed');
+        const m = hashSlide();
+        if (m || body.dataset.mode === 'slides') setMode('slides', m?.[1] ? m[1] - 1 : 0);
+        else setMode('article');
+      });
+    })();
+  </script>
+</body>
+</html>

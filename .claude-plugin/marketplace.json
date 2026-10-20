@@ -1,0 +1,14 @@
+{
+  "name": "advanced-perception",
+  "description": "Advanced Perception internal Claude Code plugins.",
+  "owner": {
+    "name": "Advanced Perception"
+  },
+  "plugins": [
+    {
+      "name": "infographics",
+      "source": "./",
+      "description": "House-style single-file HTML infographics (reports, process explainers, spec anatomies, diagrams)."
+    }
+  ]
+}
