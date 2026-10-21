@@ -12,7 +12,6 @@ skills/infographic/
   SKILL.md              # workflow, archetypes, rules, checklist
   references/           # design-system.md (tokens), components.md (snippets)
   assets/template.html  # starting skeleton for every new page
-examples/               # reference infographics, one per archetype
 ```
 
 ## Installation
