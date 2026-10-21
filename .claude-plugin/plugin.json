@@ -1,6 +1,6 @@
 {
   "name": "infographics",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Create single-file interactive HTML infographics in the company house style (Tailwind, Inter + JetBrains Mono, slate neutrals, semantic accents, Chart.js, Lucide).",
   "author": {
     "name": "Yunex Traffic"
