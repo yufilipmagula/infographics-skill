@@ -113,14 +113,6 @@ where I can paste a hostname and see each segment explained.
 - An **Article / Slides** switch in the header. In slides mode, the bottom bar lists the slide titles so you can jump to any slide; when there are too many to fit, the `^` button opens the full list. The zoom controls next to prev/next scale only the slide content (keys `-`, `0` for 100%, `+`, and `W` for fit to width). You can also use `←` / `→`, PageUp/PageDown, Home/End or swipe; `#slide-3` in the URL opens slide 3. Printing in slides mode gives one slide per page.
 - A layout chosen to fit your content:
 
-| Archetype | Good for | Example |
-|---|---|---|
-| Report / Benchmark | measurements, A-vs-B, SLA results | [camera_latency_performance_report_infographic.html](examples/camera_latency_performance_report_infographic.html) |
-| Anatomy / Spec | formats, naming schemes, standards | [hostname_and_serial_number_infographic.html](examples/hostname_and_serial_number_infographic.html) |
-| Process Explainer (tabbed) | release processes, SDLC, playbooks | [awareai_release_process_infographic.html](examples/awareai_release_process_infographic.html), [ai_native_sdlc_infographics.html](examples/ai_native_sdlc_infographics.html) |
-| Diagram / Timeline | roadmaps, org structures, architectures | [awareai_hw_2_0_timeline_infographic.html](examples/awareai_hw_2_0_timeline_infographic.html), [ai_native_sdlc_org_structure.html](examples/ai_native_sdlc_org_structure.html) |
-| Ops Blueprint (dark) | AI copilots, telemetry, live systems | [dmp_ai_operations_lifecycle_copilot_infographic.html](examples/dmp_ai_operations_lifecycle_copilot_infographic.html) |
-
 ### Tips for good results
 
 - **Give it the real data.** The skill never invents numbers, names or quotes. If something is missing it will ask you or leave the slot out.
